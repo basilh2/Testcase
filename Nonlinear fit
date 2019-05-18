@@ -1,0 +1,31 @@
+import numpy as np, scipy
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error
+from mpl_toolkits.mplot3d import Axes3D
+
+def func(x, a, b, n): 
+    return  a * x + b * (x ** n)
+
+xdata = np.array([0.0254585, 0.0482912, 0.081269, 0.1149756, 0.1431184, 0.1711653, 0.1972983, 0.2458231, 0.3267191, 0.3846374, 0.4352388, 0.474097, 0.5032355, 0.533358])
+ydata = np.array([0.276678353, 0.56179514, 1.056338518, 1.590261255, 2.07585, 2.60057, 3.07108, 4.106705, 6.16261, 8.17505, 10.25396, 12.29454, 14.151, 15.71339])
+
+
+#for m in range(0,50):  
+popt, pcov = curve_fit(func, xdata, ydata)
+plt.plot(xdata, func(xdata, *popt), 'r-', label='fit: a=%5.2f, b=%5.2f, n=%5.2f' % tuple(popt))
+plt.title("netOD vs Dose nonlinear fit D=a*netOD+b*(netOD^n)")
+plt.legend()
+plt.scatter(xdata,ydata)
+plt.xlabel("netOD")
+plt.ylabel("Absorbed dose, Gy")
+print("\n", popt)
+print("\n",pcov)
+
+ypredict = func(xdata, *popt)
+MSE = mean_squared_error(ydata, ypredict)
+r2 = r2_score(ydata,ypredict)
+#print("m=%s" % str(m))
+print("r2 = %s" % str(r2))
+print("MSE = %s" % str(MSE))
